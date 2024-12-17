@@ -79,7 +79,7 @@ def download_and_convert_to_mp3(url):
         st.error(f"An error occurred: {e}")
 
 # Streamlit UI to input YouTube URL and start the process
-st.title("YouTube to MP3 Converter")
+st.title("YouTube to MP3 Converter V1.0")
 url = st.text_input("Enter YouTube URL:", key="url")  # Using a key for the session state
 
 if st.button("Download and Convert"):
@@ -88,7 +88,13 @@ if st.button("Download and Convert"):
     else:
         st.warning("Please enter a valid YouTube URL.")
 
-# "Convert Another" button to refresh
+# "Convert Another" button to refresh and clear temporary files
 if st.button("Convert Another"):
+    # Remove temporary files before clearing the session state
+    temp_files = ["/tmp/temp_audio.webm", "/tmp/temp_audio.mp3"]
+    for file in temp_files:
+        if os.path.exists(file):
+            os.remove(file)
+
     st.session_state.url = ""  # Reset the URL input field
     st.experimental_rerun()  # Refresh the app to reset the URL input
