@@ -105,5 +105,6 @@ if st.button("Convert Another"):
         if os.path.exists(file):
             os.remove(file)
 
-    # Reset the URL input and refresh the app
-    st.experimental_rerun()  # Refresh the app to reset the URL input
+    # Clear the URL input field (but do not trigger a re-run)
+    st.experimental_set_query_params(url='')  # Reset the URL query parameter
+    st.text_input("Enter YouTube URL:", value='')  # Clear the text input field
