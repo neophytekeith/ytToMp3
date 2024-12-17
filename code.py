@@ -81,7 +81,7 @@ def download_and_convert_to_mp3(url):
         os.remove(audio_file)  # Remove the temporary audio file
         os.remove(output_mp3)  # Optionally remove the MP3 file after download if desired
 
-        # Clear session state after download
+        # Refresh the app to reset the URL input field
         st.session_state.url = ""  # Reset the URL input field
         st.experimental_rerun()  # Refresh the app to reset the URL input
 
@@ -91,11 +91,11 @@ def download_and_convert_to_mp3(url):
 # Streamlit UI to input YouTube URL and start the process
 st.title("YouTube to MP3 Converter")
 
-# Reset session state before rendering input widget
-if 'url' in st.session_state:
-    st.session_state.url = ""  # Reset the URL input field when the app refreshes
-
 # Show URL input
+if 'url' not in st.session_state:
+    st.session_state.url = ""  # Initialize if it doesn't exist
+
+# Render the URL input field
 url = st.text_input("Enter YouTube URL:", key="url")
 
 # Button to trigger conversion
@@ -113,6 +113,6 @@ if st.button("Convert Another"):
         if os.path.exists(file):
             os.remove(file)
 
-    # Reset the URL input field and refresh the page
+    # Refresh the app
     st.session_state.url = ""  # Reset the URL input field
     st.experimental_rerun()  # Refresh the app to reset the URL input
