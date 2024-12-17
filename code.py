@@ -7,23 +7,20 @@ import subprocess
 def download_and_convert_to_mp3(url):
     try:
         # Set up yt-dlp options
+        download_dir = "/tmp"  # Streamlit Cloud uses /tmp for temporary files
+        os.makedirs(download_dir, exist_ok=True)
+
         ydl_opts = {
             'format': 'bestaudio/best',
-            'outtmpl': './temp_audio.%(ext)s',
+            'outtmpl': os.path.join(download_dir, 'temp_audio.%(ext)s'),  # Set download path
         }
-
-        # Create download directory if it doesn't exist
-        download_dir = "/tmp"  # Streamlit Cloud uses `/tmp` as the working directory
-        os.makedirs(download_dir, exist_ok=True)
 
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             st.write(f"Downloading: {url}")
             ydl.download([url])
 
-        # Get the downloaded file path
-        audio_file = os.path.join(download_dir, 'temp_audio.webm')  # Update this path
-
-        # Check if the file exists
+        # After downloading, check if the file exists
+        audio_file = os.path.join(download_dir, 'temp_audio.webm')  # Expected download format
         if not os.path.exists(audio_file):
             st.error(f"Error: The downloaded file {audio_file} was not found.")
             return
@@ -39,10 +36,11 @@ def download_and_convert_to_mp3(url):
             '-b:a', '320k',  # Set bitrate to 320 kbps
             output_mp3
         ]
-        
+
         # Run the command using subprocess
         subprocess.run(command, check=True)  # This ensures ffmpeg is run with the correct path
-        
+
+        # Display success message and audio player
         st.success(f"Conversion successful! Download your file: {output_mp3}")
         st.audio(output_mp3, format='audio/mp3')
 
