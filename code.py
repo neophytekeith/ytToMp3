@@ -91,13 +91,10 @@ def download_and_convert_to_mp3(url):
 # Streamlit UI to input YouTube URL and start the process
 st.title("YouTube to MP3 Converter")
 
-# Reset the URL input field if "Convert Another" is pressed
-if "url" in st.session_state:
-    st.session_state.url = ""  # Ensure the URL is reset before showing the input field
+# Only show the URL input if the "Convert Another" button hasn't been clicked
+url = st.text_input("Enter YouTube URL:", key="url")
 
-# Input field for URL
-url = st.text_input("Enter YouTube URL:", key="url")  # Using a key for the session state
-
+# Button to trigger conversion
 if st.button("Download and Convert"):
     if url:
         download_and_convert_to_mp3(url)
@@ -112,5 +109,6 @@ if st.button("Convert Another"):
         if os.path.exists(file):
             os.remove(file)
 
+    # Reset the URL input field and refresh the page
     st.session_state.url = ""  # Reset the URL input field
     st.experimental_rerun()  # Refresh the app to reset the URL input
