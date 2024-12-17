@@ -98,13 +98,4 @@ if st.button("Download and Convert"):
     else:
         st.warning("Please enter a valid YouTube URL.")
 
-# "Convert Another" button to refresh and clear temporary files
-if st.button("Convert Another"):
-    # Clear temporary files before refreshing
-    temp_files = ["/tmp/temp_audio.webm", "/tmp/temp_audio.mp3"]
-    for file in temp_files:
-        if os.path.exists(file):
-            os.remove(file)
 
-    st.session_state.url = ""  # Reset the URL input field
-    st.experimental_rerun()  # Refresh the app to reset the URL input
