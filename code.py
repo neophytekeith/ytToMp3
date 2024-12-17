@@ -87,8 +87,8 @@ def download_and_convert_to_mp3(url):
 # Streamlit UI to input YouTube URL and start the process
 st.title("YouTube to MP3 Converter")
 
-# Show URL input
-url = st.text_input("Enter YouTube URL:")
+# Clear the input field when needed
+url = st.text_input("Enter YouTube URL:", key="url")  # Using a key to ensure unique widget
 
 # Button to trigger conversion
 if st.button("Download and Convert"):
@@ -99,12 +99,14 @@ if st.button("Download and Convert"):
 
 # "Convert Another" button to refresh and clear temporary files
 if st.button("Convert Another"):
-    # Clear temporary files before refreshing
+    # Clear temporary files before refreshing the input
     temp_files = ["/tmp/temp_audio.webm", "/tmp/temp_audio.mp3"]
     for file in temp_files:
         if os.path.exists(file):
             os.remove(file)
+    
+    # Reset the URL input field manually
+    st.experimental_set_query_params(url="")  # Use query params to reset the URL
 
-    # Clear the URL input field (but do not trigger a re-run)
-    st.experimental_set_query_params(url='')  # Reset the URL query parameter
-    st.text_input("Enter YouTube URL:", value='')  # Clear the text input field
+    # Re-render the UI to allow another conversion
+    st.experimental_rerun()  # This reruns the app and resets everything
