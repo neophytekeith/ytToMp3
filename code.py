@@ -1,7 +1,7 @@
 import os
 import yt_dlp
 import streamlit as st
-from moviepy.editor import AudioFileClip
+import subprocess
 
 # Function to download and convert YouTube video to MP3
 def download_and_convert_to_mp3(url):
@@ -41,7 +41,7 @@ def download_and_convert_to_mp3(url):
         ]
         
         # Run the command using subprocess
-        os.system(" ".join(command))  # This ensures ffmpeg is run with the correct path
+        subprocess.run(command, check=True)  # This ensures ffmpeg is run with the correct path
         
         st.success(f"Conversion successful! Download your file: {output_mp3}")
         st.audio(output_mp3, format='audio/mp3')
