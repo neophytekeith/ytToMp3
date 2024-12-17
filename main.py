@@ -1,6 +1,6 @@
 import streamlit as st
 from yt_dlp import YoutubeDL
-from moviepy.editor import AudioFileClip
+from moviepy import AudioFileClip
 import os
 
 # Function to download audio and convert to MP3
