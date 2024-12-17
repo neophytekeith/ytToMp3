@@ -80,8 +80,4 @@ if st.button("Download and Convert"):
     else:
         st.warning("Please enter a valid YouTube URL.")
 
-# "Reset Conversion" button to reset URL and session state
-if st.button("Reset Conversion"):
-    st.session_state['url'] = ""  # Reset the URL input field
-    st.session_state['download_complete'] = False  # Optionally reset other states
-    st.write("Conversion reset. Enter a new URL.")
+
