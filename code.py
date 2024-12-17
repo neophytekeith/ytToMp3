@@ -6,9 +6,19 @@ import subprocess
 # Function to download and convert YouTube video to MP3
 def download_and_convert_to_mp3(url):
     try:
-        # Set up yt-dlp options
+        # Set up the download directory
         download_dir = "/tmp"  # Streamlit Cloud uses /tmp for temporary files
         os.makedirs(download_dir, exist_ok=True)
+
+        # Clear any existing temporary files before starting a new conversion
+        temp_audio_file = os.path.join(download_dir, 'temp_audio.webm')
+        temp_mp3_file = os.path.join(download_dir, 'temp_audio.mp3')
+        
+        # Remove any existing temporary files
+        if os.path.exists(temp_audio_file):
+            os.remove(temp_audio_file)
+        if os.path.exists(temp_mp3_file):
+            os.remove(temp_mp3_file)
 
         # Add User-Agent header to avoid restrictions
         ydl_opts = {
@@ -79,7 +89,7 @@ def download_and_convert_to_mp3(url):
         st.error(f"An error occurred: {e}")
 
 # Streamlit UI to input YouTube URL and start the process
-st.title("YouTube to MP3 Converter V1.0")
+st.title("YouTube to MP3 Converter")
 url = st.text_input("Enter YouTube URL:", key="url")  # Using a key for the session state
 
 if st.button("Download and Convert"):
@@ -90,7 +100,7 @@ if st.button("Download and Convert"):
 
 # "Convert Another" button to refresh and clear temporary files
 if st.button("Convert Another"):
-    # Remove temporary files before clearing the session state
+    # Clear temporary files before refreshing
     temp_files = ["/tmp/temp_audio.webm", "/tmp/temp_audio.mp3"]
     for file in temp_files:
         if os.path.exists(file):
