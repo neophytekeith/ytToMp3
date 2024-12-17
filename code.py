@@ -1,49 +1,59 @@
 import streamlit as st
-from yt_dlp import YoutubeDL
-from moviepy import AudioFileClip
+import subprocess
 import os
+from yt_dlp import YoutubeDL
 
-# Function to download audio and convert to MP3
-def download_and_convert_to_mp3(url, output_path="."):
+# Initialize session state for the URL input
+if 'url' not in st.session_state:
+    st.session_state.url = ''
+
+FFMPEG_PATH = r'C:\ffmpeg\bin\ffmpeg.exe'  # Update with your actual FFmpeg path
+
+def download_audio(url, output_path="."):
     try:
-        # Set options for yt-dlp
+        # Set yt-dlp options to extract the video title and best audio format
         ydl_opts = {
             'format': 'bestaudio/best',
             'outtmpl': os.path.join(output_path, 'temp_audio.%(ext)s'),
+            'noplaylist': True,  # Ensure it's only downloading the single video, not a playlist
+            'quiet': True  # Don't show extra output in Streamlit
         }
 
+        # Download the video and get the video info (including title)
         with YoutubeDL(ydl_opts) as ydl:
-            st.write(f"Downloading audio from: {url}")
-            ydl.download([url])
+            st.write(f"Downloading: {url}")
+            info_dict = ydl.extract_info(url, download=True)
+            video_title = info_dict.get('title', 'downloaded_audio')  # Use video title or a fallback name
 
-        # Check for downloaded file
-        audio_file = os.path.join(output_path, 'temp_audio.webm')  # Default extension
-        if not os.path.exists(audio_file):
-            st.error("Failed to download audio file.")
-            return None
+        # Convert to MP3 using ffmpeg
+        input_file = os.path.join(output_path, 'temp_audio.webm')  # WebM is typical for audio downloads
+        output_file = os.path.join(output_path, f"{video_title}.mp3")  # Use video title for the MP3 name
+        
+        # Command to convert using ffmpeg (320 kbps)
+        command = [FFMPEG_PATH, "-i", input_file, "-vn", "-b:a", "320k", output_file]
+        subprocess.run(command, check=True)
 
-        # Convert to MP3 using moviepy
-        st.write("Converting audio to MP3...")
-        output_mp3 = os.path.join(output_path, 'output.mp3')
-        audio_clip = AudioFileClip(audio_file)
-        audio_clip.write_audiofile(output_mp3, codec="libmp3lame", bitrate="320k")
-        audio_clip.close()
-
-        # Cleanup temporary file
-        os.remove(audio_file)
-        st.success(f"Conversion complete! File saved at: {output_mp3}")
-        return output_mp3
+        os.remove(input_file)  # Clean up the temporary WebM file
+        st.success(f"Conversion complete! File saved as: {output_file}")
+        return output_file
     except Exception as e:
         st.error(f"An error occurred: {e}")
         return None
 
-# Streamlit interface
+# Streamlit app layout
 st.title("YouTube to MP3 Converter")
-url = st.text_input("Enter YouTube URL:")
+
+# Input for YouTube URL
+url = st.text_input("Enter YouTube URL:", value=st.session_state.url)
+
+# "Download and Convert" button
 if st.button("Download and Convert"):
     if url:
-        output_file = download_and_convert_to_mp3(url)
-        if output_file:
-            st.success("File conversion successful!")
+        download_audio(url)
     else:
         st.error("Please enter a valid YouTube URL.")
+
+# "Convert Another" button (below the download button)
+if st.button("Convert Another"):
+    st.session_state.url = ''  # Reset the URL in session state
+    st.experimental_rerun()  # Refresh the app to reset the URL input field
