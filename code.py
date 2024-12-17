@@ -81,10 +81,6 @@ def download_and_convert_to_mp3(url):
         os.remove(audio_file)  # Remove the temporary audio file
         os.remove(output_mp3)  # Optionally remove the MP3 file after download if desired
 
-        # Refresh the app to reset the URL input field
-        st.session_state.url = ""  # Reset the URL input field
-        st.experimental_rerun()  # Refresh the app to reset the URL input
-
     except Exception as e:
         st.error(f"An error occurred: {e}")
 
@@ -92,11 +88,7 @@ def download_and_convert_to_mp3(url):
 st.title("YouTube to MP3 Converter")
 
 # Show URL input
-if 'url' not in st.session_state:
-    st.session_state.url = ""  # Initialize if it doesn't exist
-
-# Render the URL input field
-url = st.text_input("Enter YouTube URL:", key="url")
+url = st.text_input("Enter YouTube URL:")
 
 # Button to trigger conversion
 if st.button("Download and Convert"):
@@ -113,6 +105,5 @@ if st.button("Convert Another"):
         if os.path.exists(file):
             os.remove(file)
 
-    # Refresh the app
-    st.session_state.url = ""  # Reset the URL input field
+    # Reset the URL input and refresh the app
     st.experimental_rerun()  # Refresh the app to reset the URL input
