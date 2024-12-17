@@ -63,16 +63,19 @@ def download_and_convert_to_mp3(url):
                 mime="audio/mp3"
             )
 
+        # Clear temporary files after conversion
+        os.remove(audio_file)  # Remove the temporary audio file
+        os.remove(output_mp3)  # Optionally remove the MP3 file after download if desired
+
         # Clear session state after download
         st.session_state.url = ""  # Reset the URL input field
-        # Optionally clear other session states or cache
-        st.experimental_rerun()  # Refresh the app
+        st.experimental_rerun()  # Refresh the app to reset the URL input
 
     except Exception as e:
         st.error(f"An error occurred: {e}")
 
 # Streamlit UI to input YouTube URL and start the process
-st.title("YouTube to MP3 Converter V1.0")
+st.title("YouTube to MP3 Converter")
 url = st.text_input("Enter YouTube URL:", key="url")  # Using a key for the session state
 
 if st.button("Download and Convert"):
