@@ -7,7 +7,8 @@ from yt_dlp import YoutubeDL
 if 'url' not in st.session_state:
     st.session_state.url = ''
 
-FFMPEG_PATH = r'C:\ffmpeg\bin\ffmpeg.exe'  # Update with your actual FFmpeg path
+# Use the correct path for FFmpeg in Streamlit Cloud
+FFMPEG_PATH = '/usr/bin/ffmpeg'  # This is where FFmpeg is installed in Streamlit Cloud
 
 def download_audio(url, output_path="."):
     try:
@@ -31,6 +32,7 @@ def download_audio(url, output_path="."):
         
         # Command to convert using ffmpeg (320 kbps)
         command = [FFMPEG_PATH, "-i", input_file, "-vn", "-b:a", "320k", output_file]
+        print(f"Running command: {command}")  # Debugging line
         subprocess.run(command, check=True)
 
         os.remove(input_file)  # Clean up the temporary WebM file
