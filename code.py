@@ -10,6 +10,7 @@ def download_and_convert_to_mp3(url):
         download_dir = "/tmp"  # Streamlit Cloud uses /tmp for temporary files
         os.makedirs(download_dir, exist_ok=True)
 
+        # Add User-Agent header to avoid restrictions
         ydl_opts = {
             'format': 'bestaudio/best',
             'outtmpl': os.path.join(download_dir, 'temp_audio.%(ext)s'),  # Set download path
@@ -17,6 +18,9 @@ def download_and_convert_to_mp3(url):
             'extractaudio': True,  # Only extract audio
             'audioquality': 0,  # Best audio quality
             'noplaylist': True,  # Ensure only one video is downloaded (not a playlist)
+            'headers': {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+            },
         }
 
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
