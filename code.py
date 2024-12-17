@@ -3,6 +3,21 @@ import yt_dlp
 import streamlit as st
 import subprocess
 
+# Function to clear temporary files
+def clear_temp_files():
+    download_dir = "/tmp"  # Streamlit Cloud uses /tmp for temporary files
+    temp_audio_file = os.path.join(download_dir, 'temp_audio.webm')
+    temp_mp3_file = os.path.join(download_dir, 'temp_audio.mp3')
+
+    # Remove any existing temporary files
+    if os.path.exists(temp_audio_file):
+        os.remove(temp_audio_file)
+    if os.path.exists(temp_mp3_file):
+        os.remove(temp_mp3_file)
+
+# Clear temp files before the page loads (or when the app is refreshed)
+clear_temp_files()
+
 # Function to download and convert YouTube video to MP3
 def download_and_convert_to_mp3(url):
     try:
@@ -11,14 +26,7 @@ def download_and_convert_to_mp3(url):
         os.makedirs(download_dir, exist_ok=True)
 
         # Clear any existing temporary files before starting a new conversion
-        temp_audio_file = os.path.join(download_dir, 'temp_audio.webm')
-        temp_mp3_file = os.path.join(download_dir, 'temp_audio.mp3')
-        
-        # Remove any existing temporary files
-        if os.path.exists(temp_audio_file):
-            os.remove(temp_audio_file)
-        if os.path.exists(temp_mp3_file):
-            os.remove(temp_mp3_file)
+        clear_temp_files()
 
         # Add User-Agent header to avoid restrictions
         ydl_opts = {
@@ -78,12 +86,7 @@ def download_and_convert_to_mp3(url):
             )
 
         # Clear temporary files after conversion
-        os.remove(audio_file)  # Remove the temporary audio file
-        os.remove(output_mp3)  # Optionally remove the MP3 file after download if desired
-
-        # Clear session state after download
-        st.session_state.url = ""  # Reset the URL input field
-        st.experimental_rerun()  # Refresh the app to reset the URL input
+        clear_temp_files()  # Remove the temporary audio and mp3 files
 
     except Exception as e:
         st.error(f"An error occurred: {e}")
@@ -98,4 +101,8 @@ if st.button("Download and Convert"):
     else:
         st.warning("Please enter a valid YouTube URL.")
 
-
+# "Reset Conversion" button to reset URL and session state
+if st.button("Reset Conversion"):
+    st.session_state["url"] = ""  # This will reset the input field
+    clear_temp_files()  # Clear the temporary files
+    st.experimental_rerun()  # Refresh the app to reset the URL input
