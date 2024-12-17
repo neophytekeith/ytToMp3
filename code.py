@@ -2,13 +2,19 @@ import streamlit as st
 import subprocess
 import os
 from yt_dlp import YoutubeDL
+import shutil  # For detecting the ffmpeg executable
 
 # Initialize session state for the URL input
 if 'url' not in st.session_state:
     st.session_state.url = ''
 
-# Use the correct path for FFmpeg in Streamlit Cloud
-FFMPEG_PATH = '/usr/bin/ffmpeg'  # This is where FFmpeg is installed in Streamlit Cloud
+# Try to detect FFmpeg path automatically using shutil.which()
+FFMPEG_PATH = shutil.which('ffmpeg')
+
+# If FFmpeg is not found, raise an error
+if FFMPEG_PATH is None:
+    st.error("FFmpeg is not installed or not found in the system PATH. Please install FFmpeg.")
+    st.stop()  # Stop the execution if FFmpeg is not found
 
 def download_audio(url, output_path="."):
     try:
