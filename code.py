@@ -23,7 +23,11 @@ def download_and_convert_to_mp3(url):
             # Extract video info, including the title
             info_dict = ydl.extract_info(url, download=False)
             video_title = info_dict.get('title', 'Unknown Title')
-            st.write(f"Downloading: {video_title}")  # Display video title instead of URL
+
+            # Show the "Converting to MP3" message with the video title
+            st.write(f"Converting '{video_title}' to MP3. Please wait...")
+
+            # Download the audio file
             ydl.download([url])
 
         # After downloading, check if the file exists
@@ -34,9 +38,6 @@ def download_and_convert_to_mp3(url):
 
         # Use video title for the output filename
         output_mp3 = os.path.join(download_dir, f'{video_title}.mp3')
-
-        # Display message indicating conversion
-        st.write("Converting to MP3. Please wait...")
 
         # Use ffmpeg directly to convert the audio to MP3
         command = [
@@ -67,7 +68,7 @@ def download_and_convert_to_mp3(url):
 
 # Streamlit UI to input YouTube URL and start the process
 st.title("YouTube to MP3 Converter")
-url = st.text_input("Enter YouTube URL:")
+url = st.text_input("Enter YouTube URL:", key="url")  # Using a key for the session state
 
 if st.button("Download and Convert"):
     if url:
@@ -77,4 +78,5 @@ if st.button("Download and Convert"):
 
 # "Convert Another" button to refresh
 if st.button("Convert Another"):
+    st.session_state.url = ""  # Reset the URL input field
     st.experimental_rerun()  # Refresh the app to reset the URL input
