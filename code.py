@@ -35,7 +35,8 @@ def download_and_convert_to_mp3(url):
         # Use video title for the output filename
         output_mp3 = os.path.join(download_dir, f'{video_title}.mp3')
 
-        st.write(f"Converting to MP3: {audio_file} -> {output_mp3}")
+        # Display message indicating conversion
+        st.write("Converting to MP3. Please wait...")
 
         # Use ffmpeg directly to convert the audio to MP3
         command = [
@@ -50,8 +51,16 @@ def download_and_convert_to_mp3(url):
         subprocess.run(command, check=True)  # This ensures ffmpeg is run with the correct path
 
         # Display success message and audio player
-        st.success(f"Conversion successful! Download your file: {output_mp3}")
-        st.audio(output_mp3, format='audio/mp3')
+        st.success(f"Conversion successful! You can download your file below:")
+
+        # Provide download link for the user
+        with open(output_mp3, "rb") as f:
+            st.download_button(
+                label="Download MP3",
+                data=f,
+                file_name=f'{video_title}.mp3',
+                mime="audio/mp3"
+            )
 
     except Exception as e:
         st.error(f"An error occurred: {e}")
