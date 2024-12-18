@@ -15,9 +15,6 @@ def clear_temp_files():
     if os.path.exists(temp_mp3_file):
         os.remove(temp_mp3_file)
 
-# Clear temp files before the page loads (or when the app is refreshed)
-clear_temp_files()
-
 # Function to download and convert YouTube video to MP3
 def download_and_convert_to_mp3(url):
     try:
@@ -93,7 +90,12 @@ def download_and_convert_to_mp3(url):
 
 # Streamlit UI to input YouTube URL and start the process
 st.title("YouTube to MP3 Converter")
-url = st.text_input("Enter YouTube URL:", key="url")  # Using a key for the session state
+
+# Use session state to persist the URL input field
+if 'url' not in st.session_state:
+    st.session_state.url = ""
+
+url = st.text_input("Enter YouTube URL:", key="url")  # Using session state key
 
 if st.button("Download and Convert"):
     if url:
@@ -103,6 +105,6 @@ if st.button("Download and Convert"):
 
 # "Reset Conversion" button to reset URL and session state
 if st.button("Reset Conversion"):
-    st.session_state["url"] = ""  # This will reset the input field
+    st.session_state.url = ""  # This will reset the input field
     clear_temp_files()  # Clear the temporary files
     st.experimental_rerun()  # Refresh the app to reset the URL input
